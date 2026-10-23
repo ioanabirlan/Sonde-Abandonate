@@ -1,0 +1,401 @@
+<!doctype html>
+<html lang="ro">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sonde abandonate</title>
+<meta name="description" content="Inventarul ANRMPSG al sondelor inactive, închise și abandonate (Reg. UE 2024/1787), lângă penele de metan detectate din satelit, ariile Natura 2000 și școlile din apropiere. Fiecare punct are sursa în popup.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" rel="stylesheet">
+<script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+<style>
+:root{--bg:#0a0c0f;--panel:rgba(14,17,21,.94);--ink:#ebe8e2;--mute:#8d939c;--faint:#5b616a;--line:#252a31;
+--acc:#22d3ee;--inactiva:#f2b134;--temporar:#f07a35;--permanent:#e0475f;--abandonata:#b06ef0;
+--sans:"IBM Plex Sans",system-ui,sans-serif;--mono:"IBM Plex Mono",ui-monospace,monospace;--serif:"Fraunces",Georgia,serif}
+*{box-sizing:border-box}html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font:14px/1.45 var(--sans)}
+#map{position:fixed;inset:0}
+a{color:var(--acc)}
+#panel{position:fixed;z-index:2;top:12px;left:12px;bottom:12px;width:372px;background:var(--panel);backdrop-filter:blur(8px);
+border:1px solid var(--line);border-radius:14px;display:flex;flex-direction:column;overflow:hidden}
+#panel .scroll{overflow:auto;padding:20px 20px 8px;flex:1}
+.kicker{font:500 11px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--acc)}
+h1{font:600 30px/1.05 var(--serif);margin:10px 0 10px;letter-spacing:-.01em}
+.lede{color:#c4c1bb;margin:0 0 16px;font-size:13.5px}
+h2{font:500 11px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--mute);margin:20px 0 10px}
+.big{display:flex;align-items:baseline;gap:10px;border-top:1px solid var(--line);padding-top:14px}
+.big b{font:500 40px/1 var(--mono);letter-spacing:-.03em}
+.big span{color:var(--mute);font-size:12.5px;line-height:1.3}
+.bar{height:6px;background:#1c2026;border-radius:3px;margin:10px 0 4px;overflow:hidden;display:flex}
+.bar i{display:block;height:100%}
+.barlbl{display:flex;justify-content:space-between;font:11px var(--mono);color:var(--faint)}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);border:1px solid var(--line);border-radius:10px;overflow:hidden;margin-top:14px}
+.stat{background:#101318;padding:10px 12px}
+.stat b{display:block;font:500 20px/1.1 var(--mono)}
+.stat span{display:block;color:var(--mute);font-size:11.5px;line-height:1.3;margin-top:3px}
+.stat a{font:10px var(--mono);color:var(--faint);text-decoration:none}
+.stat a:hover{color:var(--acc)}
+.status{margin-top:12px;font:12px var(--mono);color:var(--inactiva)}
+.status[hidden]{display:none}
+.search{position:relative;margin-top:14px}
+.search input{width:100%;background:#0d1014;border:1px solid var(--line);color:var(--ink);border-radius:8px;padding:9px 11px;font:13px var(--sans)}
+.search input:focus{outline:none;border-color:var(--acc)}
+#qres{position:absolute;left:0;right:0;top:100%;background:#0f1216;border:1px solid var(--line);border-radius:8px;margin-top:4px;z-index:5;max-height:260px;overflow:auto}
+#qres div{padding:7px 10px;cursor:pointer;border-bottom:1px solid #1a1e24;font-size:12.5px}
+#qres div:hover{background:#161a20}#qres small{color:var(--mute)}
+.layer{display:grid;grid-template-columns:18px 14px 1fr auto;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid #191d23;cursor:pointer}
+.layer input{margin:0;accent-color:var(--acc)}
+.sw{width:12px;height:12px;border-radius:50%}
+.sw.sq{border-radius:2px}.sw.ln{height:3px;border-radius:2px}.sw.dm{transform:rotate(45deg);border-radius:1px;width:10px;height:10px}
+.layer .t{font-size:13px;line-height:1.25}.layer .t small{display:block;color:var(--faint);font:10.5px var(--mono)}
+.layer .n{font:11px var(--mono);color:var(--mute)}
+.layer.off{opacity:.45;cursor:not-allowed}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{display:flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:99px;padding:4px 10px 4px 8px;font-size:12px;cursor:pointer;user-select:none}
+.chip.dim{opacity:.35}.chip i{width:9px;height:9px;border-radius:50%}
+.chk{display:flex;gap:8px;align-items:center;font-size:12.5px;color:#c4c1bb;margin-top:10px}
+footer{border-top:1px solid var(--line);padding:10px 14px;display:flex;gap:8px;flex-wrap:wrap}
+footer button,footer a{background:#151920;border:1px solid var(--line);color:var(--ink);border-radius:7px;padding:6px 10px;font:12px var(--sans);cursor:pointer;text-decoration:none}
+footer button:hover,footer a:hover{border-color:var(--acc)}
+.gen{font:10.5px var(--mono);color:var(--faint);padding:8px 20px;border-top:1px solid var(--line)}
+@media (min-width:721px){.maplibregl-ctrl-bottom-right{max-width:calc(100% - 410px)}}
+#toggle{display:none}
+.maplibregl-popup{max-width:340px!important}
+.maplibregl-popup-content{background:#0f1216;color:var(--ink);border:1px solid #2a3038;border-radius:10px;padding:14px 14px 10px;box-shadow:0 10px 30px rgba(0,0,0,.5);font:12.5px/1.4 var(--sans)}
+.maplibregl-popup-tip{border-top-color:#2a3038!important;border-bottom-color:#2a3038!important}
+.maplibregl-popup-close-button{color:var(--mute);font-size:18px;right:4px;top:2px}
+.pp{max-height:min(62vh,560px);overflow:auto;padding-right:4px}
+.pp-k{font:500 10.5px/1 var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--mute);display:flex;gap:6px;align-items:center}
+.pp-k i{width:8px;height:8px;border-radius:50%;display:inline-block}
+.pp h3{font:600 17px/1.15 var(--serif);margin:6px 0 8px}
+.pp table{border-collapse:collapse;width:100%}
+.pp th{text-align:left;font-weight:400;color:var(--mute);padding:2px 8px 2px 0;vertical-align:top;white-space:nowrap;font-size:11.5px}
+.pp td{padding:2px 0;font-variant-numeric:tabular-nums}
+.pp .ctx{margin-top:8px;border-top:1px dashed #2a3038;padding-top:7px}
+.pp .ctx div{margin:3px 0}
+.pp sup a{font:9.5px var(--mono);text-decoration:none;color:var(--faint);border:1px solid #2a3038;border-radius:3px;padding:0 3px;margin-left:3px}
+.pp sup a:hover{color:var(--acc);border-color:var(--acc)}
+.pp .note{background:#15191f;border-left:2px solid var(--inactiva);padding:5px 8px;margin-top:8px;font-size:11.5px;color:#c4c1bb}
+.pp .src{margin-top:10px;padding-top:8px;border-top:1px solid #2a3038;font-size:11.5px}
+.pp .src b{font:500 10px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--acc);margin-right:4px}
+.pp .src small{display:block;color:var(--faint);margin-top:2px;font-size:10.5px}
+.pp img{width:100%;border-radius:6px;margin-top:8px;background:#000}
+#modal{position:fixed;inset:0;z-index:10;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;padding:16px}
+#modal[hidden]{display:none}
+#modal .box{background:#0f1216;border:1px solid var(--line);border-radius:14px;max-width:920px;width:100%;max-height:88vh;overflow:auto;padding:24px;position:relative}
+#modal .x{position:absolute;right:12px;top:10px;background:none;border:0;color:var(--mute);font-size:24px;cursor:pointer}
+#modal h2{margin-top:0}
+#modal table{width:100%;border-collapse:collapse;font-size:12.5px}
+#modal td,#modal th{border-bottom:1px solid var(--line);padding:8px 8px 8px 0;text-align:left;vertical-align:top}
+#modal th{font:500 10.5px var(--mono);color:var(--mute);text-transform:uppercase;letter-spacing:.05em}
+#modal li{margin:6px 0;color:#c9c6c0}
+.okb{font:10.5px var(--mono);padding:1px 6px;border-radius:4px;background:#12301f;color:#5ee28f;white-space:nowrap}
+.errb{font:10.5px var(--mono);padding:1px 6px;border-radius:4px;background:#3a1717;color:#ff8f8f}
+@media (max-width:720px){
+ #panel{top:auto;left:0;right:0;bottom:0;width:auto;max-height:62vh;border-radius:14px 14px 0 0;transition:transform .25s}
+ #panel.closed{transform:translateY(calc(100% - 64px))}
+ #toggle{display:block;position:absolute;top:0;left:0;right:0;height:22px;background:none;border:0;cursor:pointer}
+ #toggle:before{content:"";display:block;width:40px;height:4px;border-radius:2px;background:#3a4048;margin:9px auto}
+ h1{font-size:24px}.maplibregl-ctrl-top-right{top:0}
+}
+</style>
+</head>
+<body>
+<div id="map"></div>
+<aside id="panel">
+ <button id="toggle" aria-label="Deschide panoul"></button>
+ <div class="scroll">
+  <div class="kicker">Reg. (UE) 2024/1787 · metan</div>
+  <h1>Sonde abandonate</h1>
+  <p class="lede">ANRMPSG publică etapizat, până în 2030, inventarul sondelor inactive, închise și abandonate. Harta pune inventarul lângă emisiile de metan observate din satelit și lângă ce se află în jurul sondelor. <b>Fiecare punct are sursa în popup.</b></p>
+  <div id="hero"></div>
+  <div id="status" class="status">⏳ Se încarcă cele peste 20.000 de sonde…</div>
+  <div class="stats" id="stats"></div>
+  <div class="search"><input id="q" placeholder="Caută o sondă, localitate sau operator…" autocomplete="off"><div id="qres" hidden></div></div>
+  <h2>Straturi</h2><div id="layers"></div>
+  <h2>Sonde după status</h2><div class="chips" id="chips"></div>
+  <label class="chk"><input type="checkbox" id="onlych4"> doar sondele cu emisii de metan raportate &gt; 0</label>
+ </div>
+ <div class="gen" id="gen"></div>
+ <div class="autor">Hartă realizată de <b>Ioana Birlan</b></div>
+</aside>
+<div id="modal" hidden><div class="box"><button class="x" aria-label="Închide">×</button><div id="mbody"></div></div></div>
+<script>
+const STC={inactiva:'#f2b134',inchisa_temporar:'#f07a35',inchisa_permanent:'#e0475f',abandonata:'#b06ef0',altul:'#8d939c'};
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmt=(n,d=0)=>(n==null||n===''||isNaN(n))?'—':Number(n).toLocaleString('ro-RO',{maximumFractionDigits:d});
+const fold=s=>String(s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/ã/g,'a').toLowerCase();
+let META,map,popup,DATA={},SID=new Map(),STATUS_ON=new Set(Object.keys(STC));
+const EMPTY={type:'FeatureCollection',features:[]};
+const SRC_ID={judete:'judete',natura2000:'natura',sentinel2:'s2',osm_conducte:'conducte',sonde:'sonde',osm_sonde:'osm-sonde',eprtr:'eprtr',climate_trace:'ct',osm_sensibile:'sens',carbon_mapper:'pene',vant:'vant'};
+
+function src(key,url,extra){const s=META.surse[key]||{};return `<div class="src"><b>Sursa</b><a href="${esc(url||s.url)}" target="_blank" rel="noopener">${esc(s.nume)}</a>${extra?' · '+extra:''}<small>${esc(s.furnizor)} · ${esc(s.licenta)} · accesat ${esc(s.accesat)}</small></div>`}
+function tag(key,url,label){const s=META.surse[key]||{};return `<sup><a href="${esc(url||s.url)}" target="_blank" rel="noopener" title="Sursa: ${esc(s.nume)} — ${esc(s.furnizor)}">${esc(label||key)}</a></sup>`}
+function row(l,v,t=''){return (v==null||v==='')?'':`<tr><th>${l}</th><td>${typeof v==='number'?fmt(v,2):esc(v)}${t}</td></tr>`}
+function wlink(sid,txt){return `<a href="#" data-sid="${sid}">${esc(txt)}</a>`}
+
+const POP={
+ sonde:p=>{const st=META.status_etichete[p.st]||p.st;const pdf=META.pdf.etapa2+'#page='+p.pg;
+  let ctx='';
+  if(p.n2k){ctx+=`<div>🌿 În aria Natura 2000 ${p.n2k.split(';').map(c=>`<b>${esc(c)}</b>`).join(', ')} – ${esc(p.n2k_nume)} ${tag('natura2000','https://natura2000.eea.europa.eu/Natura2000/SDF.aspx?site='+p.n2k.split(';')[0],'EEA')}</div>`}
+  if(p.sens_d!=null){ctx+=`<div>🏫 ${p.sens_n?`<b>${p.sens_n}</b> școli/grădinițe/spitale la &lt; ${META.dist_sensibil} m · `:''}cel mai apropiat: ${esc(p.sens_nume||'obiectiv fără nume')}, <b>${fmt(p.sens_d)} m</b> ${tag('osm_sensibile',p.sens_oid?'https://www.openstreetmap.org/'+p.sens_oid:null,'OSM')}</div>`}
+  if(p.pana_km!=null){ctx+=`<div>🛰️ Cea mai apropiată pană de metan detectată din satelit: <b>${fmt(p.pana_km,2)} km</b> ${tag('carbon_mapper',p.pana_id?'https://api.carbonmapper.org/api/v1/catalog/plume/'+encodeURIComponent(p.pana_id):null,'Carbon Mapper')}</div>`}
+  ctx+=`<div>📄 Publicată în ${p.et1?'Etapa I (2025) și Etapa II (2026)':'Etapa II (2026)'} ${tag('anrm',META.pagina_anrm,'ANRMPSG')}</div>`;
+  let note='';
+  if(p.xy==='B')note+=`<div class="note">În PDF, coordonatele X/Y ale acestui rând sunt inversate față de convenția Stereo70 (X = Nord). Le-am interpretat ca X = Est (${esc(p.xy_m)}).</div>`;
+  if(p.verif==='suspect'||p.verif==='margine')note+=`<div class="note">⚠ Punctul cade la ${fmt(p.dj,1)} km în afara județului declarat (${esc(p.jud)}). Coordonata din sursă poate fi eronată.</div>`;
+  return `<div class="pp"><div class="pp-k"><i style="background:${STC[p.st]}"></i>Sondă · ${esc(st)}</div><h3>${esc(p.den)}</h3><table>
+  ${row('Operator',p.op)}${row('Localitate',[p.loc,p.jud].filter(Boolean).join(', '))}${row('Încadrare',p.st_raw)}
+  ${row('Emisii metan',p.ch4_raw!=null?p.ch4_raw+(p.ch4!=null?' g/h':''):'nespecificat')}
+  ${row('Început foraj',p.dfi)}${row('Final foraj',p.dff)}${row('Adâncime',p.adm,p.adm?' m':'')}${row('Tip',p.tip)}${row('Orientare',p.ori)}${row('Situare',p.sit)}
+  ${row('Aviz abandonare',[p.aviz,p.aviz_d].filter(Boolean).join(' din '))}${row('Stereo70 (PDF)',`X ${p.x} · Y ${p.y}`)}${row('Altitudine Z',p.z)}
+  </table><div class="ctx">${ctx}</div>${note}
+  ${src('anrm',pdf,`pagina ${p.pg}, nr. crt. ${p.nr} · <a href="${esc(META.pagina_anrm)}" target="_blank" rel="noopener">pagina oficială</a>`)}</div>`},
+ pene:p=>`<div class="pp"><div class="pp-k"><i style="background:#22d3ee"></i>Pană de metan · satelit</div><h3>${p.em!=null?fmt(p.em)+' kg/h':'Pană CH₄'}${p.em_unc!=null?` <small style="font:12px var(--mono);color:var(--mute)">± ${fmt(p.em_unc)}</small>`:''}</h3><table>
+  ${row('Data',p.data)}${row('Platformă',[p.platf,p.instr].filter(Boolean).join(' / '))}${row('Sector',p.sector)}${row('ID',p.pid)}</table>
+  ${p.sonda?`<div class="ctx"><div>Cea mai apropiată sondă inventariată: ${wlink(p.sonda_sid,p.sonda)} (${esc(p.sonda_op||'')}), <b>${fmt(p.sonda_km,2)} km</b> ${tag('anrm',META.pagina_anrm,'ANRMPSG')}</div></div>`:''}
+  ${p.img?`<img src="${esc(p.img)}" alt="Imaginea penei" loading="lazy" onerror="this.remove()">`:''}
+  <div class="note" style="border-color:#22d3ee">Sateliții detectează de obicei doar scurgeri mari (zeci–sute de kg/h). Pana poate proveni și de la infrastructură activă, nu neapărat de la o sondă abandonată.</div>
+  ${src('carbon_mapper',p.src_url,`<a href="https://data.carbonmapper.org/" target="_blank" rel="noopener">portal</a>`)}</div>`,
+ ct:p=>`<div class="pp"><div class="pp-k"><i style="background:#a3e635"></i>Sursă de emisii · estimare</div><h3>${esc(p.nume||'Activ Climate TRACE')}</h3><table>
+  ${row('Tip',p.tip)}${row('Sector',p.sector)}${row('CH₄ (an)',p.ch4_t!=null?fmt(p.ch4_t)+' t':null)}${row('CO₂e 100 ani',p.co2e_t!=null?fmt(p.co2e_t)+' t':null)}${row('Sonde inventariate la < 2 km',p.n_sonde_2km)}</table>
+  ${src('climate_trace',p.src_url,`<a href="https://climatetrace.org/explore" target="_blank" rel="noopener">explorator</a>`)}</div>`,
+ sens:p=>`<div class="pp"><div class="pp-k"><i style="background:#fff"></i>${esc(p.tip)}</div><h3>${esc(p.nume||p.tip+' fără nume în OSM')}</h3><table>
+  ${row('Sonde la < '+META.dist_sensibil+' m',p.n_sonde_500)}</table><div class="ctx"><div>Cea mai apropiată sondă: ${wlink(p.sonda_sid,p.sonda)} – ${esc(p.sonda_st)}, <b>${fmt(p.d_m)} m</b> ${tag('anrm',META.pagina_anrm,'ANRMPSG')}</div></div>
+  ${src('osm_sensibile',p.src_url,'element '+esc(p.oid))}</div>`,
+ eprtr:p=>`<div class="pp"><div class="pp-k"><i style="background:#60a5fa"></i>Facilitate E-PRTR</div><h3>${esc(p.FacilityName)}</h3><table>
+  ${row('Companie-mamă',p.ParentCompanyName)}${row('Localitate',p.City)}${row('Cod NACE',p.NACEActivityCode)}${row('Ultimul an raportat',p.ReportingYear)}${row('ID',p.FacilityID)}</table>
+  ${src('eprtr',p.src_url)}</div>`,
+ osm:p=>`<div class="pp"><div class="pp-k"><i style="background:#cbd5e1"></i>Sondă cartată în OSM</div><h3>${esc(p.nume||'Sondă fără nume')}</h3><table>
+  ${row('Operator (OSM)',p.operator)}${row('Substanță',p.subst)}</table><div class="ctx"><div>${p.inv_m>150?'⚠ Nicio sondă inventariată la &lt; 150 m. Cea mai apropiată':'Corespunde probabil sondei inventariate'}: ${esc(p.inv_sonda)}, <b>${fmt(p.inv_m)} m</b> ${tag('anrm',META.pagina_anrm,'ANRMPSG')}</div></div>
+  ${src('osm_sonde',p.src_url,'element '+esc(p.oid))}</div>`,
+ conducte:p=>`<div class="pp"><div class="pp-k"><i style="background:#7dd3fc"></i>Conductă · ${esc(p.subst)}</div><h3>${esc(p.nume||p.operator||'Conductă')}</h3><table>
+  ${row('Operator',p.operator)}${row('Amplasare',p.loc)}${row('Diametru',p.diam)}</table>${src('osm_conducte',p.src_url,'element '+esc(p.oid))}</div>`,
+ vant:p=>`<div class="pp"><div class="pp-k"><i style="background:#fff"></i>Vânt · ${esc((p.ora||'').replace('T',' '))}</div><h3>${fmt(p.viteza,1)} km/h din ${fmt(p.dir)}°</h3><table>
+  ${row('Rafale',p.rafala!=null?fmt(p.rafala,1)+' km/h':null)}${row('Temperatură',p.temp!=null?fmt(p.temp,1)+' °C':null)}${row('Zonă',p.judet)}${row('Sonde în celulă (~20 km)',p.n_sonde)}</table>
+  <div class="note" style="border-color:#fff">Săgeata arată încotro ar fi purtat metanul la momentul generării hărții.</div>${src('open_meteo',p.src_url,'cerere API')}</div>`,
+ s2:p=>`<div class="pp"><div class="pp-k"><i style="background:#e5e7eb"></i>Imagine Sentinel-2 L2A</div><h3>${esc(p.data)}</h3><table>${row('Acoperire nori',p.nori!=null?fmt(p.nori,1)+' %':null)}${row('Zonă',p.judet)}${row('Scenă',p.item)}</table>
+  <div class="note" style="border-color:#e5e7eb">Măriți la zoom ≥ 9 ca să vedeți imaginea.</div>${src('sentinel2',p.src_url,'item STAC')}</div>`,
+ natura:p=>`<div class="pp"><div class="pp-k"><i style="background:#3fb950"></i>Natura 2000 · ${({A:'SPA (păsări)',B:'SCI/SAC (habitate)',C:'SCI + SPA'})[p.SITETYPE]||esc(p.SITETYPE)}</div><h3>${esc(p.SITENAME)}</h3><table>
+  ${row('Cod',p.SITECODE)}${row('Suprafață',p.Area_km2!=null?fmt(p.Area_km2,1)+' km²':null)}${row('Sonde inventariate în sit',p.n_sonde)}</table>${src('natura2000',p.src_url,'formularul standard al sitului')}</div>`,
+ jud:p=>`<div class="pp"><div class="pp-k">Județ</div><h3>${esc(p.shapeName)}</h3><table>${row('Sonde inventariate',p.n)}${row('Inactive',p.inactiva)}${row('Închise temporar',p.temporar)}${row('Închise permanent / abandonate',p.permanent)}
+  ${row('Densitate',p.dens!=null?fmt(p.dens,1)+' / 100 km²':null)}${row('Cu emisii raportate > 0',p.ch4_n)}${row('Total emisii raportate',p.ch4_sum?fmt(p.ch4_sum)+' g/h':null)}${row('În Natura 2000',p.n2k)}${row('Operator principal',p.op)}</table>
+  <div class="ctx"><div>Statistici calculate din inventar ${tag('anrm',META.pagina_anrm,'ANRMPSG')}</div></div>${src('geoboundaries',p.src_url,'limita județului')}</div>`,
+};
+
+// ordinea de prioritate la click
+const CLICK=[['vant','vant'],['pene','pene'],['sens','sens'],['ct','ct'],['eprtr','eprtr'],['sonde','sonde'],['osm-sonde','osm'],['conducte','conducte'],['s2-foot','s2'],['natura-fill','natura'],['jud-fill','jud']];
+
+const GROUPS=[
+ {k:'sonde',file:'sonde',layers:['sonde-heat','sonde'],label:'Sonde inventariate',src:'anrm',sw:'background:linear-gradient(90deg,#f2b134,#f07a35,#e0475f,#b06ef0)',on:true},
+ {k:'pene',file:'carbon_mapper',layers:['pene-glow','pene'],label:'Pene de metan din satelit',src:'carbon_mapper',sw:'background:#22d3ee;box-shadow:0 0 8px #22d3ee',on:true},
+ {k:'ct',file:'climate_trace',layers:['ct'],label:'Surse de emisii estimate',src:'climate_trace',sw:'background:#a3e635',cls:'dm',on:true},
+ {k:'sens',file:'osm_sensibile',layers:['sens'],label:'Școli și spitale lângă sonde',src:'osm_sensibile',sw:'background:#fff;border:2px solid #60a5fa',on:true},
+ {k:'natura',file:'natura2000',layers:['natura-fill','natura-line'],label:'Arii Natura 2000',src:'natura2000',sw:'background:rgba(63,185,80,.35);border:1px solid #3fb950',cls:'sq',on:true},
+ {k:'vant',file:'vant',layers:['vant'],label:'Vântul acum',src:'open_meteo',sw:'background:#fff',cls:'dm',on:true},
+ {k:'s2',file:'sentinel2',layers:['s2-foot'],label:'Imagini Sentinel-2 recente (zoom ≥ 9)',src:'sentinel2',sw:'background:#e5e7eb',cls:'sq',on:true},
+ {k:'conducte',file:'osm_conducte',layers:['conducte'],label:'Conducte petrol și gaze',src:'osm_conducte',sw:'background:#7dd3fc',cls:'ln',on:false},
+ {k:'osm',file:'osm_sonde',layers:['osm-sonde'],label:'Sonde cartate în OSM',src:'osm_sonde',sw:'background:#cbd5e1',on:false},
+ {k:'eprtr',file:'eprtr',layers:['eprtr'],label:'Facilități industriale E-PRTR',src:'eprtr',sw:'background:#60a5fa',cls:'sq',on:false},
+ {k:'jud',file:'judete',layers:['jud-fill','jud-line'],label:'Densitatea sondelor pe județe',src:'geoboundaries',sw:'background:linear-gradient(90deg,#2a2016,#f07a35)',cls:'sq',on:false},
+ {k:'esri',file:null,layers:['esri'],label:'Fundal satelitar',src:'esri',sw:'background:#3b5d3a',cls:'sq',on:false},
+];
+const FILE_KEY={sonde:'anrm',carbon_mapper:'carbon_mapper',climate_trace:'climate_trace',osm_sensibile:'osm_sensibile',natura2000:'natura2000',vant:'open_meteo',sentinel2:'sentinel2',osm_conducte:'osm_conducte',osm_sonde:'osm_sonde',eprtr:'eprtr',judete:'geoboundaries'};
+
+function icons(){
+ const mk=(name,draw,s=48)=>{const c=document.createElement('canvas');c.width=c.height=s;const x=c.getContext('2d');x.fillStyle='#fff';draw(x,s);map.addImage(name,x.getImageData(0,0,s,s),{sdf:true,pixelRatio:2})};
+ mk('sq',(x,s)=>x.fillRect(s*.2,s*.2,s*.6,s*.6));
+ mk('dm',(x,s)=>{x.beginPath();x.moveTo(s/2,s*.1);x.lineTo(s*.9,s/2);x.lineTo(s/2,s*.9);x.lineTo(s*.1,s/2);x.fill()});
+ mk('arrow',(x,s)=>{x.beginPath();x.moveTo(s/2,s*.04);x.lineTo(s*.82,s*.5);x.lineTo(s*.6,s*.5);x.lineTo(s*.6,s*.96);x.lineTo(s*.4,s*.96);x.lineTo(s*.4,s*.5);x.lineTo(s*.18,s*.5);x.fill()},64);
+}
+
+function addLayers(){
+ const has=f=>(META.fisiere||[]).includes(f);
+ const vis=k=>GROUPS.find(g=>g.k===k).on?'visible':'none';
+ if(has('judete')){map.addSource('judete',{type:'geojson',data:EMPTY});
+  map.addLayer({id:'jud-fill',type:'fill',source:'judete',layout:{visibility:vis('jud')},paint:{'fill-color':['interpolate',['linear'],['coalesce',['get','dens'],0],0,'rgba(0,0,0,0)',1,'#2a2016',5,'#6b3519',15,'#b24a22',40,'#f07a35'],'fill-opacity':.7}});
+  map.addLayer({id:'jud-line',type:'line',source:'judete',layout:{visibility:vis('jud')},paint:{'line-color':'#3a3f47','line-width':.8}});}
+ if(has('natura2000')){map.addSource('natura',{type:'geojson',data:EMPTY});
+  map.addLayer({id:'natura-fill',type:'fill',source:'natura',layout:{visibility:vis('natura')},paint:{'fill-color':'#3fb950','fill-opacity':['interpolate',['linear'],['zoom'],6,.10,11,.16]}});
+  map.addLayer({id:'natura-line',type:'line',source:'natura',layout:{visibility:vis('natura')},paint:{'line-color':'#3fb950','line-width':['interpolate',['linear'],['zoom'],6,.4,12,1.4],'line-opacity':.7}});}
+ (META.sentinel||[]).forEach((s,i)=>{const b=s.bbox;
+  map.addSource('s2r-'+i,{type:'raster',tiles:[s.tiles],tileSize:256,minzoom:8,maxzoom:14,...(b?{bounds:b}:{}),attribution:'Copernicus Sentinel-2 '+s.data.slice(0,4)+' / Planetary Computer'});
+  map.addLayer({id:'s2r-'+i,type:'raster',source:'s2r-'+i,minzoom:8.5,layout:{visibility:vis('s2')},paint:{'raster-opacity':['interpolate',['linear'],['zoom'],8.5,0,9.5,.95]}});
+  GROUPS.find(g=>g.k==='s2').layers.push('s2r-'+i);});
+ if(has('sentinel2')){map.addSource('s2',{type:'geojson',data:EMPTY});
+  map.addLayer({id:'s2-foot',type:'line',source:'s2',minzoom:7,layout:{visibility:vis('s2')},paint:{'line-color':'#e5e7eb','line-width':1,'line-dasharray':[3,3],'line-opacity':.5}});}
+ if(has('osm_conducte')){map.addSource('conducte',{type:'geojson',data:EMPTY});
+  map.addLayer({id:'conducte',type:'line',source:'conducte',layout:{visibility:vis('conducte'),'line-cap':'round'},paint:{'line-color':['case',['in','oil',['get','subst']],'#fbbf24','#7dd3fc'],'line-width':['interpolate',['linear'],['zoom'],6,.6,12,2],'line-opacity':.65}});}
+ if(has('sonde')){map.addSource('sonde',{type:'geojson',data:EMPTY});
+  map.addLayer({id:'sonde-heat',type:'heatmap',source:'sonde',maxzoom:9.5,layout:{visibility:vis('sonde')},paint:{'heatmap-radius':['interpolate',['linear'],['zoom'],5,4,9,14],'heatmap-intensity':['interpolate',['linear'],['zoom'],5,.5,9,1.4],
+   'heatmap-color':['interpolate',['linear'],['heatmap-density'],0,'rgba(0,0,0,0)',.15,'#3b1d0f',.35,'#8a3418',.6,'#e0475f',.85,'#f2b134',1,'#fff3c4'],'heatmap-opacity':['interpolate',['linear'],['zoom'],7.5,.85,9.5,0]}});
+  map.addLayer({id:'sonde',type:'circle',source:'sonde',layout:{visibility:vis('sonde')},paint:{'circle-color':['match',['get','st'],'inactiva',STC.inactiva,'inchisa_temporar',STC.inchisa_temporar,'inchisa_permanent',STC.inchisa_permanent,'abandonata',STC.abandonata,STC.altul],
+   'circle-radius':['interpolate',['linear'],['zoom'],5,['case',['>',['coalesce',['get','ch4'],0],0],1.8,.9],9,['case',['>',['coalesce',['get','ch4'],0],0],4.5,2.6],14,['case',['>',['coalesce',['get','ch4'],0],0],9,6]],
+   'circle-opacity':['interpolate',['linear'],['zoom'],5,.35,8,.9],'circle-stroke-color':'#22d3ee','circle-stroke-width':['interpolate',['linear'],['zoom'],7,0,10,['case',['>',['coalesce',['get','ch4'],0],0],1.2,0]]}});}
+ if(has('osm_sonde')){map.addSource('osm-sonde',{type:'geojson',data:EMPTY});
+  map.addLayer({id:'osm-sonde',type:'circle',source:'osm-sonde',layout:{visibility:vis('osm')},paint:{'circle-color':'#cbd5e1','circle-radius':['interpolate',['linear'],['zoom'],6,1.2,13,4],'circle-opacity':.7,'circle-stroke-color':['case',['>',['coalesce',['get','inv_m'],0],150],'#f2b134','rgba(0,0,0,0)'],'circle-stroke-width':1}});}
+ if(has('eprtr')){map.addSource('eprtr',{type:'geojson',data:EMPTY});
+  map.addLayer({id:'eprtr',type:'symbol',source:'eprtr',layout:{visibility:vis('eprtr'),'icon-image':'sq','icon-size':['interpolate',['linear'],['zoom'],5,.5,12,1],'icon-allow-overlap':true},paint:{'icon-color':'#60a5fa','icon-halo-color':'#0a0c0f','icon-halo-width':1}});}
+ if(has('climate_trace')){map.addSource('ct',{type:'geojson',data:EMPTY});
+  map.addLayer({id:'ct',type:'symbol',source:'ct',layout:{visibility:vis('ct'),'icon-image':'dm','icon-size':['interpolate',['linear'],['coalesce',['get','ch4_t'],0],0,.45,1000,.7,10000,1.1,50000,1.6],'icon-allow-overlap':true},paint:{'icon-color':'#a3e635','icon-halo-color':'#0a0c0f','icon-halo-width':1.5,'icon-opacity':.9}});}
+ if(has('osm_sensibile')){map.addSource('sens',{type:'geojson',data:EMPTY});
+  map.addLayer({id:'sens',type:'circle',source:'sens',layout:{visibility:vis('sens')},paint:{'circle-color':'#ffffff','circle-radius':['interpolate',['linear'],['zoom'],5,1.6,10,4,14,7],'circle-stroke-color':'#60a5fa','circle-stroke-width':['interpolate',['linear'],['zoom'],5,.6,10,2]}});}
+ if(has('carbon_mapper')){map.addSource('pene',{type:'geojson',data:EMPTY});
+  const r=['interpolate',['linear'],['coalesce',['get','em'],100],50,5,300,8,1000,12,5000,18,20000,26];
+  map.addLayer({id:'pene-glow',type:'circle',source:'pene',layout:{visibility:vis('pene')},paint:{'circle-color':'#22d3ee','circle-radius':['*',2.2,r],'circle-blur':1,'circle-opacity':.35}});
+  map.addLayer({id:'pene',type:'circle',source:'pene',layout:{visibility:vis('pene')},paint:{'circle-color':'rgba(34,211,238,.25)','circle-radius':r,'circle-stroke-color':'#22d3ee','circle-stroke-width':1.6}});}
+ if(has('vant')){map.addSource('vant',{type:'geojson',data:EMPTY});
+  map.addLayer({id:'vant',type:'symbol',source:'vant',layout:{visibility:vis('vant'),'icon-image':'arrow','icon-rotate':['+',['coalesce',['get','dir'],0],180],'icon-rotation-alignment':'map','icon-allow-overlap':true,
+   'icon-size':['interpolate',['linear'],['coalesce',['get','viteza'],0],0,.45,10,.7,30,1.1]},paint:{'icon-color':'#ffffff','icon-opacity':.9,'icon-halo-color':'#0a0c0f','icon-halo-width':1.5}});}
+}
+
+function flyToSid(sid){const f=SID.get(+sid);if(!f)return;const c=f.geometry.coordinates;map.flyTo({center:c,zoom:Math.max(map.getZoom(),13.5),speed:1.6,offset:innerWidth>720?[190,-170]:[0,-200]});
+ map.once('moveend',()=>{popup.setLngLat(c).setHTML(POP.sonde(f.properties)).addTo(map)});}
+
+function filterSonde(){if(!map.getLayer('sonde'))return;const st=['in',['get','st'],['literal',[...STATUS_ON]]];
+ const f=document.getElementById('onlych4').checked?['all',st,['>',['coalesce',['get','ch4'],0],0]]:st;map.setFilter('sonde',f);map.setFilter('sonde-heat',f);}
+
+function ui(){
+ const S=META.stat,sc=S.status||{};
+ document.getElementById('hero').innerHTML=`<div class="big"><b>${fmt(S.total)}</b><span>sonde publicate până acum<br>din ~${fmt(S.estimat)} vizate de regulament</span></div>
+ <div class="bar">${['inactiva','inchisa_temporar','inchisa_permanent','abandonata'].map(k=>`<i style="width:${100*(sc[k]||0)/S.estimat}%;background:${STC[k]}" title="${META.status_etichete[k]}: ${fmt(sc[k]||0)}"></i>`).join('')}</div>
+ <div class="barlbl"><span>${S.procent}% inventariat</span><span>termen: 5 august 2030</span></div>`;
+ const SHORT={anrm:'ANRMPSG',natura2000:'EEA',osm_sensibile:'OSM',carbon_mapper:'Carbon Mapper'};
+ const st=(v,l,k)=>`<div class="stat"><b>${v==null?'—':fmt(v)}</b><span>${l}</span>${tag(k,null,SHORT[k])}</div>`;
+ document.getElementById('stats').innerHTML=st(S.ch4_raportat,'sonde cu emisii de metan raportate > 0','anrm')+st(S.n2k,'sonde în interiorul unor arii Natura 2000','natura2000')
+  +st(S.sens,`școli, grădinițe, spitale la < ${META.dist_sensibil} m de o sondă`,'osm_sensibile')+st(S.pene,'pene de metan detectate din satelit în România','carbon_mapper');
+ document.querySelectorAll('.stat sup a').forEach(a=>a.style.marginLeft=0);
+ const L=document.getElementById('layers');
+ GROUPS.forEach(g=>{const ok=!g.file||(META.fisiere||[]).includes(g.file);const s=META.surse[g.src]||{};
+  const n=g.file&&ok?'…':'';
+  const d=document.createElement('label');d.className='layer'+(ok?'':' off');
+  d.innerHTML=`<input type="checkbox" ${g.on&&ok?'checked':''} ${ok?'':'disabled'}><i class="sw ${g.cls||''}" style="${g.sw}"></i><span class="t">${g.label}<small>${ok?esc(s.furnizor||'').split(' – ')[0].split(' (')[0]:'indisponibil: '+esc((s.status||'').slice(0,60))}</small></span><span class="n">${n}</span>`;
+  d.querySelector('input').onchange=e=>g.layers.forEach(id=>map.getLayer(id)&&map.setLayoutProperty(id,'visibility',e.target.checked?'visible':'none'));
+  g.row=d;L.appendChild(d);});
+ const C=document.getElementById('chips');
+ ['inactiva','inchisa_temporar','inchisa_permanent','abandonata'].forEach(k=>{if(!sc[k])return;const c=document.createElement('span');c.className='chip';
+  c.innerHTML=`<i style="background:${STC[k]}"></i>${META.status_etichete[k]} <small style="color:var(--mute);font-family:var(--mono)">${fmt(sc[k])}</small>`;
+  c.onclick=()=>{STATUS_ON.has(k)?STATUS_ON.delete(k):STATUS_ON.add(k);c.classList.toggle('dim');filterSonde()};C.appendChild(c)});
+ document.getElementById('onlych4').onchange=filterSonde;
+ document.getElementById('gen').textContent='Generat '+META.generat+' · coordonate Stereo70 → WGS84';
+ // căutare
+ const q=document.getElementById('q'),qr=document.getElementById('qres');
+ q.oninput=()=>{const t=fold(q.value.trim());if(t.length<2){qr.hidden=true;return}const out=[];
+  if(!DATA.sonde){qr.innerHTML='<div><small>Sondele se încarcă încă…</small></div>';qr.hidden=false;return}
+  for(const f of DATA.sonde.features){const p=f.properties;if(fold(p.den).includes(t)||fold(p.loc).includes(t)||fold(p.op).includes(t)){out.push(p);if(out.length>=12)break}}
+  qr.innerHTML=out.length?out.map(p=>`<div data-sid="${p.sid}"><b>${esc(p.den)}</b> <small>${esc(p.loc)}, ${esc(p.jud)} · ${esc(META.status_etichete[p.st])}</small></div>`).join(''):'<div><small>Niciun rezultat</small></div>';qr.hidden=false};
+ qr.onclick=e=>{const d=e.target.closest('[data-sid]');if(d){qr.hidden=true;flyToSid(d.dataset.sid);closePanelMobile()}};
+ document.addEventListener('click',e=>{const a=e.target.closest('a[data-sid]');if(a){e.preventDefault();flyToSid(a.dataset.sid)}if(!e.target.closest('.search'))qr.hidden=true});
+ // modale
+ document.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>modal(b.dataset.m));
+ document.querySelector('#modal .x').onclick=()=>document.getElementById('modal').hidden=true;
+ document.getElementById('modal').onclick=e=>{if(e.target.id==='modal')e.target.hidden=true};
+ document.getElementById('toggle').onclick=()=>document.getElementById('panel').classList.toggle('closed');
+}
+function closePanelMobile(){if(innerWidth<=720)document.getElementById('panel').classList.add('closed')}
+
+function modal(which){const B=document.getElementById('mbody'),S=META.stat;
+ if(which==='surse'){B.innerHTML=`<h2>Surse de date</h2><table><tr><th>Sursă</th><th>Folosită pentru</th><th>Licență</th><th>Stare</th></tr>${Object.values(META.surse).map(s=>`<tr>
+  <td><a href="${esc(s.url)}" target="_blank" rel="noopener"><b>${esc(s.nume)}</b></a><br><small style="color:var(--mute)">${esc(s.furnizor)}</small>${s.api?`<br><small style="font-family:var(--mono);color:var(--faint);word-break:break-all">${esc(s.api)}</small>`:''}</td>
+  <td>${esc(s.folosire)}</td><td>${esc(s.licenta)}</td><td>${s.status==='ok'?`<span class="okb">ok · ${fmt(s.n)}</span>`:(s.status==='neîncărcat'&&!s.api?'<span class="okb">fundal</span>':`<span class="errb">${esc(s.status)}</span>`)}<br><small style="color:var(--faint)">${esc(s.accesat)}</small></td></tr>`).join('')}</table>`}
+ else{B.innerHTML=`<h2>Metodologie și limite</h2><ul>
+ <li><b>Inventarul</b> provine din PDF-urile ANRMPSG (Etapa I, 31.07.2025 și Etapa II, 04.08.2026). Etapa II este cumulativă: ${fmt(S.total)} rânduri, din care cele ${fmt(S.etapa1)} din Etapa I. Tabelele au fost extrase automat din PDF, iar valorile originale sunt afișate neschimbate în popup.</li>
+ <li><b>Coordonatele</b> din PDF sunt în Stereo70 (EPSG:3844) și au fost convertite în WGS84 cu pyproj. Convenția oficială este X = Nord, Y = Est, însă la ${fmt(S.xy_inversat)} sonde X și Y apar inversate (diferă de la un operator la altul). Pentru fiecare sondă am încercat ambele variante și am păstrat-o pe cea care cade în județul declarat. Când ambele variante cad în același județ, am folosit orientarea majoritară a operatorului.</li>
+ <li>Verificare: ${Object.entries(S.verif||{}).map(([k,v])=>`${esc(k)}: ${fmt(v)}`).join(' · ')}. Sondele „margine” sau „suspect” au o notă în popup. ${fmt(S.excluse)} sonde nu au coordonate utilizabile (lipsesc sau sunt în alt sistem de coordonate) și nu apar pe hartă.</li>
+ <li><b>Emisiile de metan</b> sunt valorile din coloana „Emisii metan (g/h)”, care există doar în Etapa II. Valorile goale, „-” și „N/A” sunt tratate ca lipsă. ${fmt(S.ch4_raportat)} sonde au o valoare &gt; 0.</li>
+ <li><b>Penele detectate din satelit</b> (Carbon Mapper) apar doar peste un prag de detecție de ordinul zecilor sau sutelor de kg/h. O sondă abandonată emite de obicei mult mai puțin. Lipsa unei pene nu înseamnă lipsa emisiilor, iar o pană din apropiere nu e neapărat de la o sondă din inventar.</li>
+ <li><b>Climate TRACE</b> publică estimări modelate, nu măsurători directe. <b>Vântul</b> (Open-Meteo) este cel de la momentul generării hărții.</li>
+ <li><b>Distanțele</b> (școli/spitale la &lt; ${META.dist_sensibil} m, pene, sonde OSM) sunt calculate în metri, în Stereo70. Gradul de completitudine al OpenStreetMap variază de la o zonă la alta.</li>
+ <li>Inventarul acoperă deocamdată ${S.procent}% din ~${fmt(S.estimat)} sonde. Lipsa sondelor dintr-o zonă poate însemna doar că nu au fost încă publicate.</li></ul>
+ <p style="color:var(--mute);font-size:12px">Codul care generează harta este în același repository (notebook Python). Corecturile sunt binevenite.</p>`}
+ document.getElementById('modal').hidden=false}
+
+function setRow(file,txt,err){GROUPS.filter(g=>g.file===file).forEach(g=>{if(!g.row)return;g.row.querySelector('.n').textContent=txt;
+ if(err){g.row.classList.add('off');g.row.querySelector('input').disabled=true;g.row.querySelector('small').textContent='eroare la încărcare: '+err}})}
+
+async function main(){
+ META=await (await fetch('data/meta.json',{cache:'no-cache'})).json();
+ ui();
+ const style={version:8,sources:{
+  base:{type:'raster',tiles:['https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}'],tileSize:256,maxzoom:16,attribution:'Fundal: Esri, HERE, Garmin, © OpenStreetMap'},
+  labels:{type:'raster',tiles:['https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Reference/MapServer/tile/{z}/{y}/{x}'],tileSize:256,maxzoom:16},
+  esri:{type:'raster',tiles:['https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'],tileSize:256,maxzoom:19,attribution:'Esri, Maxar, Earthstar Geographics'}},
+  layers:[{id:'bg',type:'background',paint:{'background-color':'#0a0c0f'}},{id:'base',type:'raster',source:'base'},{id:'esri',type:'raster',source:'esri',layout:{visibility:'none'}}]};
+ const wide=innerWidth>720;if(!wide)document.getElementById('panel').classList.add('closed');
+ map=new maplibregl.Map({container:'map',style,bounds:[[20.2,43.55],[29.8,48.3]],fitBoundsOptions:{padding:wide?{left:400,right:40,top:40,bottom:40}:{left:10,right:10,top:10,bottom:200}},hash:true,attributionControl:false,maxZoom:17});
+ map.addControl(new maplibregl.AttributionControl({compact:true,customAttribution:'Date: ANRMPSG, Carbon Mapper, Climate TRACE, © OpenStreetMap, EEA, Open-Meteo, Copernicus, geoBoundaries'}),'bottom-right');
+ map.addControl(new maplibregl.NavigationControl({showCompass:false}),'top-right');
+ map.addControl(new maplibregl.ScaleControl({unit:'metric'}),'bottom-right');
+ popup=new maplibregl.Popup({maxWidth:'340px',closeButton:true});
+ const mapReady=new Promise(res=>map.loaded()?res():map.on('load',res));
+ const st=document.getElementById('status');
+ // pornim toate descărcările imediat, în paralel cu încărcarea hărții
+ const jobs=Object.keys(SRC_ID).filter(f=>(META.fisiere||[]).includes(f)).map(async f=>{
+  try{const r=await fetch(`data/${f}.geojson`);if(!r.ok)throw new Error('HTTP '+r.status);const js=await r.json();
+   await mapReady;DATA[f]=js;map.getSource(SRC_ID[f])?.setData(js);setRow(f,fmt(js.features.length));
+   if(f==='sonde'){js.features.forEach(ft=>SID.set(ft.properties.sid,ft));st.hidden=true}}
+  catch(e){setRow(f,'',e.message);if(f==='sonde')st.textContent='Sondele nu s-au putut încărca: '+e.message}});
+ await mapReady;
+ icons();addLayers();map.addLayer({id:'labels',type:'raster',source:'labels',paint:{'raster-opacity':.9}});filterSonde();
+ map.on('click',e=>{const bb=[[e.point.x-8,e.point.y-8],[e.point.x+8,e.point.y+8]];
+  for(const [id,pk] of CLICK){if(!map.getLayer(id)||map.getLayoutProperty(id,'visibility')==='none')continue;
+   const fs=map.queryRenderedFeatures(bb,{layers:[id]});if(fs.length){const f=fs[0];
+    const ll=f.geometry.type==='Point'?f.geometry.coordinates:e.lngLat;popup.setLngLat(ll).setHTML(POP[pk](f.properties)).addTo(map);return}}});
+ CLICK.forEach(([id])=>{if(!map.getLayer(id))return;map.on('mouseenter',id,()=>map.getCanvas().style.cursor='pointer');map.on('mouseleave',id,()=>map.getCanvas().style.cursor='')});
+ await Promise.all(jobs);
+}
+main().catch(e=>{document.getElementById('hero').innerHTML='<div class="note" style="color:#ff8f8f">Eroare la pornirea hărții: '+esc(e.message||e)+'</div>';console.error(e)});
+</script>
+<!--PERS-->
+<style>
+.autor{border-top:1px solid var(--line);padding:9px 20px;font:11px var(--mono);color:var(--faint)}
+.autor b{color:var(--mute);font-weight:500}
+.maplibregl-popup{max-width:400px!important}
+.pp h4{font:500 10px var(--mono);letter-spacing:.07em;text-transform:uppercase;color:var(--acc);margin:10px 0 4px}
+.pp table.full th{white-space:normal;width:46%;line-height:1.25}
+.pp table.full td{word-break:break-word}
+.pp table.full tr+tr th,.pp table.full tr+tr td{border-top:1px solid #1b2027}
+.pp .gol{color:var(--faint)}
+</style>
+<script>
+(function(){
+  const vechi = POP.sonde;
+  const v = x => (x==null || String(x).trim()==='') ? '<span class="gol">—</span>' : esc(x);
+  POP.sonde = p => {
+    const tmp = document.createElement('div'); tmp.innerHTML = vechi(p);
+    const parte = sel => [...tmp.querySelectorAll(sel)].map(e => e.outerHTML).join('');
+    const ft = SID.get(+p.sid); const c = ft ? ft.geometry.coordinates : null;
+    const st = META.status_etichete[p.st] || p.st;
+    const randuri = [
+      ['Nr. crt.', p.nr],
+      ['Denumire operator', p.op],
+      ['Adresă operator', (META.operatori_adresa || {})[p.op]],
+      ['Tip încadrare sondă conform Regulament', p.st_raw],
+      ['Județ', p.jud],
+      ['Localitate', p.loc],
+      ['Denumire sondă', p.den],
+      ['Coordonata X Stereo 70', p.x],
+      ['Coordonata Y Stereo 70', p.y],
+      ['Z (m)', p.z],
+      ['Emisii metan (g/h)', p.ch4_raw],
+      ['Dată început foraj', p.dfi],
+      ['Dată finalizare foraj', p.dff],
+      ['Orientarea sondei', p.ori],
+      ['Adâncime sondă (m)', p.adm],
+      ['Tipul sondei (explorare/exploatare)', p.tip],
+      ['Situarea sondei', p.sit],
+      ['Număr aviz de abandonare', p.aviz],
+      ['Data aviz abandonare', p.aviz_d],
+    ].map(([l, x]) => `<tr><th>${l}</th><td>${v(x)}</td></tr>`).join('');
+    const gps = c ? `<tr><th>Coordonate WGS84</th><td>${c[1].toFixed(5)}, ${c[0].toFixed(5)} · <a href="https://www.openstreetmap.org/?mlat=${c[1]}&mlon=${c[0]}#map=16/${c[1]}/${c[0]}" target="_blank" rel="noopener">OSM</a> · <a href="https://www.google.com/maps?q=${c[1]},${c[0]}" target="_blank" rel="noopener">Google Maps</a></td></tr>` : '';
+    return `<div class="pp"><div class="pp-k"><i style="background:${STC[p.st]}"></i>Sondă · ${esc(st)}</div><h3>${esc(p.den)}</h3>
+      <h4>Date din inventarul ANRMPSG</h4><table class="full">${randuri}</table>
+      <h4>Calculat</h4><table class="full">${gps}<tr><th>An foraj</th><td>${v(p.an)}</td></tr></table>
+      <h4>Context</h4>${parte('.ctx')}${parte('.note')}${parte('.src')}</div>`;
+  };
+})();
+</script>
+<!--/PERS-->
+</body>
+</html>
