@@ -315,7 +315,7 @@ function setRow(file,txt,err){GROUPS.filter(g=>g.file===file).forEach(g=>{if(!g.
  if(err){g.row.classList.add('off');g.row.querySelector('input').disabled=true;g.row.querySelector('small').textContent='eroare la încărcare: '+err}})}
 
 async function main(){
- META=await (await fetch('data/meta.json',{cache:'no-cache'})).json();
+ META=await (await fetch('meta.json',{cache:'no-cache'})).json();
  ui();
  const style={version:8,sources:{
   base:{type:'raster',tiles:['https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}'],tileSize:256,maxzoom:16,attribution:'Fundal: Esri, HERE, Garmin, © OpenStreetMap'},
@@ -332,7 +332,7 @@ async function main(){
  const st=document.getElementById('status');
  // pornim toate descărcările imediat, în paralel cu încărcarea hărții
  const jobs=Object.keys(SRC_ID).filter(f=>(META.fisiere||[]).includes(f)).map(async f=>{
-  try{const r=await fetch(`data/${f}.geojson`);if(!r.ok)throw new Error('HTTP '+r.status);const js=await r.json();
+  try{const r=await fetch(`${f}.geojson`);if(!r.ok)throw new Error('HTTP '+r.status);const js=await r.json();
    await mapReady;DATA[f]=js;map.getSource(SRC_ID[f])?.setData(js);setRow(f,fmt(js.features.length));
    if(f==='sonde'){js.features.forEach(ft=>SID.set(ft.properties.sid,ft));st.hidden=true}}
   catch(e){setRow(f,'',e.message);if(f==='sonde')st.textContent='Sondele nu s-au putut încărca: '+e.message}});
