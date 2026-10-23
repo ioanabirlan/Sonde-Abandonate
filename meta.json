@@ -1,0 +1,315 @@
+{
+ "titlu": "Sondele uitate ale României",
+ "generat": "2026-10-23 11:16 UTC",
+ "stat": {
+  "total": 20781,
+  "pe_harta": 20745,
+  "estimat": 47135,
+  "etapa1": 10168,
+  "procent": 44.1,
+  "excluse": 36,
+  "status": {
+   "inactiva": 8200,
+   "inchisa_permanent": 7590,
+   "inchisa_temporar": 4935,
+   "abandonata": 20
+  },
+  "ch4_raportat": 895,
+  "ch4_total_gh": 24654.0,
+  "n2k": 974,
+  "sens": 155,
+  "sonde_langa_sens": 341,
+  "pene": 48,
+  "xy_inversat": 3142,
+  "verif": {
+   "ok": 20654,
+   "margine": 88,
+   "suspect": 3
+  },
+  "operatori": {
+   "OMV Petrom S.A.": 16813,
+   "SNGN ROMGAZ SA": 1697,
+   "DACIAN Petroleum S.A.": 1127,
+   "Mazarine Energy Romania S.R.L.": 917,
+   "S.C. Lotus Petrol S.R.L.": 47,
+   "S.C. Foraj Sonde S.A. VIDELE": 42,
+   "S.C. Amromco Energy S.R.L.": 40,
+   "S.C. Mihoc Oil S.R.L.": 17
+  }
+ },
+ "surse": {
+  "anrm": {
+   "key": "anrm",
+   "nume": "Inventarul sondelor (Reg. UE 2024/1787)",
+   "furnizor": "ANRMPSG – Autoritatea Națională de Reglementare în Domeniul Minier, Petrolier și al Stocării Geologice a CO₂",
+   "url": "https://www.namr.ro/inventar-sonde-etapa-1-conform-regulament-ue-2024-1787/",
+   "licenta": "Informație publică (Legea 544/2001)",
+   "folosire": "Sondele inactive, închise temporar, închise permanent și abandonate: operator, status, coordonate Stereo70, emisii raportate.",
+   "api": "https://www.namr.ro/wp-content/uploads/2026/08/Inventar_sonde_ET_II_04.08.2026.pdf",
+   "accesat": "2026-10-23 11:16 UTC",
+   "status": "ok",
+   "n": 20745,
+   "secunde": null
+  },
+  "geoboundaries": {
+   "key": "geoboundaries",
+   "nume": "Limitele județelor (ADM1)",
+   "furnizor": "geoBoundaries – William & Mary geoLab",
+   "url": "https://www.geoboundaries.org/",
+   "licenta": "Creative Commons Attribution 4.0 International (CC BY 4.0)",
+   "folosire": "Verificarea coordonatelor (sonda cade în județul declarat?) și harta pe județe.",
+   "api": "https://www.geoboundaries.org/api/current/gbOpen/ROU/ADM1/",
+   "accesat": "2026-10-23 11:16 UTC",
+   "status": "ok",
+   "n": 42,
+   "secunde": 1.3
+  },
+  "carbon_mapper": {
+   "key": "carbon_mapper",
+   "nume": "Pene de metan detectate din satelit",
+   "furnizor": "Carbon Mapper (EMIT/NASA, Tanager-1/Planet, AVIRIS-3 etc.)",
+   "url": "https://data.carbonmapper.org/",
+   "licenta": "Termenii de utilizare Carbon Mapper (data.carbonmapper.org)",
+   "folosire": "Pene de CH₄ cu debit estimat (kg/h), dată și instrument.",
+   "api": "https://api.carbonmapper.org/api/v1/catalog/plumes/annotated",
+   "accesat": "2026-10-23 11:16 UTC",
+   "status": "ok",
+   "n": 48,
+   "secunde": 1.1
+  },
+  "climate_trace": {
+   "key": "climate_trace",
+   "nume": "Surse de emisii din combustibili fosili",
+   "furnizor": "Climate TRACE",
+   "url": "https://climatetrace.org/",
+   "licenta": "CC BY 4.0",
+   "folosire": "Câmpuri de petrol și gaze, mine de cărbune etc., cu emisii anuale estimate de CH₄ și CO₂e.",
+   "api": "https://api.climatetrace.org/v6/assets",
+   "accesat": "2026-10-23 11:16 UTC",
+   "status": "ok",
+   "n": 19,
+   "secunde": 0.2
+  },
+  "osm_sonde": {
+   "key": "osm_sonde",
+   "nume": "Sonde cartate în OpenStreetMap",
+   "furnizor": "Contribuitorii OpenStreetMap",
+   "url": "https://www.openstreetmap.org/copyright",
+   "licenta": "ODbL 1.0",
+   "folosire": "Obiecte man_made=petroleum_well.",
+   "api": "https://overpass-api.de/api/interpreter",
+   "accesat": "2026-10-23 11:16 UTC",
+   "status": "ok",
+   "n": 412,
+   "secunde": 38.0
+  },
+  "osm_conducte": {
+   "key": "osm_conducte",
+   "nume": "Conducte de petrol și gaze (OSM)",
+   "furnizor": "Contribuitorii OpenStreetMap",
+   "url": "https://www.openstreetmap.org/copyright",
+   "licenta": "ODbL 1.0",
+   "folosire": "Obiecte man_made=pipeline cu substance=gas/oil.",
+   "api": "https://overpass-api.de/api/interpreter",
+   "accesat": "2026-10-23 11:16 UTC",
+   "status": "ok",
+   "n": 279,
+   "secunde": 39.0
+  },
+  "osm_sensibile": {
+   "key": "osm_sensibile",
+   "nume": "Școli, grădinițe, spitale (OSM)",
+   "furnizor": "Contribuitorii OpenStreetMap",
+   "url": "https://www.openstreetmap.org/copyright",
+   "licenta": "ODbL 1.0",
+   "folosire": "Obiective sensibile; pe hartă apar doar cele la < 500 m de o sondă inventariată.",
+   "api": "https://overpass-api.de/api/interpreter",
+   "accesat": "2026-10-23 11:16 UTC",
+   "status": "ok",
+   "n": 8281,
+   "secunde": 59.2
+  },
+  "natura2000": {
+   "key": "natura2000",
+   "nume": "Arii protejate Natura 2000",
+   "furnizor": "Agenția Europeană de Mediu (EEA) – Natura 2000 (versiunea 2024)",
+   "url": "https://www.eea.europa.eu/en/datahub/datahubitem-view/6fc8ad2d-195d-40f4-bdec-576e7d1268e4",
+   "licenta": "Reutilizare liberă cu atribuire (politica EEA)",
+   "folosire": "Situri SCI/SAC și SPA; câte sonde se află în interiorul lor.",
+   "api": "https://bio.discomap.eea.europa.eu/arcgis/rest/services/ProtectedSites/Natura2000Sites/MapServer",
+   "accesat": "2026-10-23 11:16 UTC",
+   "status": "ok",
+   "n": 606,
+   "secunde": 18.2
+  },
+  "eprtr": {
+   "key": "eprtr",
+   "nume": "Facilități industriale raportoare (E-PRTR)",
+   "furnizor": "Agenția Europeană de Mediu (EEA) – E-PRTR",
+   "url": "https://industry.eea.europa.eu/",
+   "licenta": "Reutilizare liberă cu atribuire (politica EEA)",
+   "folosire": "Facilități din extracția de petrol și gaze, rafinare și transport prin conducte.",
+   "api": "https://air.discomap.eea.europa.eu/arcgis/rest/services/Air/EprtrFacilities_Dyna_WGS84/MapServer/0",
+   "accesat": "2026-10-23 11:16 UTC",
+   "status": "ok",
+   "n": 27,
+   "secunde": 0.8
+  },
+  "open_meteo": {
+   "key": "open_meteo",
+   "nume": "Vânt în timp real",
+   "furnizor": "Open-Meteo (modele ICON, GFS, ECMWF etc.)",
+   "url": "https://open-meteo.com/",
+   "licenta": "CC BY 4.0",
+   "folosire": "Viteza și direcția vântului la 10 m în zonele cu cea mai mare densitate de sonde, la momentul generării hărții.",
+   "api": "https://api.open-meteo.com/v1/forecast",
+   "accesat": "2026-10-23 11:16 UTC",
+   "status": "ok",
+   "n": 12,
+   "secunde": 0.5
+  },
+  "sentinel2": {
+   "key": "sentinel2",
+   "nume": "Imagini satelitare Sentinel-2 L2A",
+   "furnizor": "Copernicus / ESA, prin Microsoft Planetary Computer",
+   "url": "https://planetarycomputer.microsoft.com/dataset/sentinel-2-l2a",
+   "licenta": "Date Copernicus Sentinel, acces liber și gratuit",
+   "folosire": "Cea mai clară scenă recentă peste zonele cu cele mai multe sonde (vizibilă la zoom ≥ 9).",
+   "api": "https://planetarycomputer.microsoft.com/api/stac/v1/search",
+   "accesat": "2026-10-23 11:16 UTC",
+   "status": "ok",
+   "n": 3,
+   "secunde": 2.4
+  },
+  "carto": {
+   "key": "carto",
+   "nume": "Hartă de fundal",
+   "furnizor": "Esri World Dark Gray Canvas (Esri, HERE, Garmin, © contribuitorii OpenStreetMap)",
+   "url": "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer",
+   "licenta": "Esri – termeni de utilizare, cu atribuire",
+   "folosire": "Fundal cartografic închis la culoare, fără cheie API.",
+   "api": null,
+   "accesat": "2026-10-23 11:16 UTC",
+   "status": "neîncărcat",
+   "n": 0,
+   "secunde": null
+  },
+  "esri": {
+   "key": "esri",
+   "nume": "Fundal satelitar",
+   "furnizor": "Esri World Imagery (Maxar, Earthstar Geographics)",
+   "url": "https://www.arcgis.com/home/item.html?id=10df2279f9684e4a9f6a7f08febac2a9",
+   "licenta": "Esri – termeni de utilizare",
+   "folosire": "Fundal satelitar opțional.",
+   "api": null,
+   "accesat": "2026-10-23 11:16 UTC",
+   "status": "neîncărcat",
+   "n": 0,
+   "secunde": null
+  }
+ },
+ "straturi": {
+  "sonde": 20745,
+  "judete": 42,
+  "natura2000": 606,
+  "carbon_mapper": 48,
+  "climate_trace": 19,
+  "osm_sonde": 412,
+  "osm_conducte": 279,
+  "osm_sensibile": 155,
+  "eprtr": 27,
+  "open_meteo": 12,
+  "sentinel2": 3
+ },
+ "status_etichete": {
+  "inactiva": "Inactivă",
+  "inchisa_temporar": "Închisă temporar",
+  "inchisa_permanent": "Închisă permanent și abandonată",
+  "abandonata": "Abandonată",
+  "altul": "Altul"
+ },
+ "pdf": {
+  "etapa1": "https://www.namr.ro/wp-content/uploads/2025/08/Inventarul-sondeloretapa-131.07.2025.pdf",
+  "etapa2": "https://www.namr.ro/wp-content/uploads/2026/08/Inventar_sonde_ET_II_04.08.2026.pdf"
+ },
+ "pagina_anrm": "https://www.namr.ro/inventar-sonde-etapa-1-conform-regulament-ue-2024-1787/",
+ "operatori_adresa": {
+  "ALPHA METAL OIL AND GAS SRL": "020265, București, Str. Aghireș, nr. 1B, et. 4, sector 2",
+  "Black Sea Oil & Gas S.A.": "014459, București, Calea Floreasca, nr. 175, Etaj 10, sector1",
+  "Brent Exploration & Production S.R.L.": "107070, Blejoi, Str. Republicii nr. 37, județ Prahova",
+  "DACIAN Petroleum S.A.": "107070, Blejoi, Str. Republicii nr. 37",
+  "FORA OIL AND GAS SRL": "020265, București, Str. Aghireș, nr. 1B, et. 4, sector 2",
+  "Mazarine Energy Romania S.R.L.": "013696, București, Șos. București - Ploiești, nr. 42-44, Clădirea B, Aripa B2, Et. 1,",
+  "OMV Petrom S.A.": "013329,București, Str. Coralilor nr. 22",
+  "S.C Raffles Energy S.R.L.": "011454, București, b-dul Mareșal Averescu, nr. 15B-15C, etaj 1, sector 1",
+  "S.C. Amromco Energy S.R.L.": "100301, Ploiești, Str. Ghe. Grig. Cantacuzino, nr. 348, cladire C25",
+  "S.C. Foraj Sonde S.A. VIDELE": "145300, Videle, Str. Petrolului, nr. 16, județ Teleorman",
+  "S.C. Lotus Petrol S.R.L.": "010018, București, Calea Giulești, nr. 24, sector 6",
+  "S.C. Mihoc Oil S.R.L.": "617328, sat Leghin, comuna Pipirig, Str. Cerbăriei, județ Neamț",
+  "S.C. NIS PETROL S.R.L.": "014466, București, Calea Floreasca, nr. 132, Et.1, sector 1",
+  "S.C.Serinus Energy Romania S.A.": "012011, București, b-dul Mircea Eliade, nr. 7, bloc 1, etaj 3, sector 1",
+  "SNGN ROMGAZ SA": "551130, Mediaş, P-ţa C.I. Motaş, nr.4",
+  "Stratum Energy Romania Ltd": "013682, București, Sos. București - Ploiești, nr. 7A, et. 1, sector 1"
+ },
+ "sentinel": [
+  {
+   "item": "S2B_MSIL2A_20261004T092029_R093_T35TLK_20261004T114220",
+   "data": "2026-10-04",
+   "nori": 1.5,
+   "tiles": "https://planetarycomputer.microsoft.com/api/data/v1/item/tiles/WebMercatorQuad/{z}/{x}/{y}@1x?collection=sentinel-2-l2a&item=S2B_MSIL2A_20261004T092029_R093_T35TLK_20261004T114220&assets=visual&asset_bidx=visual%7C1,2,3&nodata=0",
+   "judet": "DAMBOVITA",
+   "bbox": [
+    24.45686,
+    44.138,
+    25.86548,
+    45.14807
+   ]
+  },
+  {
+   "item": "S2B_MSIL2A_20261004T092029_R093_T35TMM_20261004T114220",
+   "data": "2026-10-04",
+   "nori": 0.3,
+   "tiles": "https://planetarycomputer.microsoft.com/api/data/v1/item/tiles/WebMercatorQuad/{z}/{x}/{y}@1x?collection=sentinel-2-l2a&item=S2B_MSIL2A_20261004T092029_R093_T35TMM_20261004T114220&assets=visual&asset_bidx=visual%7C1,2,3&nodata=0",
+   "judet": "BACAU",
+   "bbox": [
+    25.68544,
+    45.95826,
+    26.90142,
+    46.95246
+   ]
+  },
+  {
+   "item": "S2B_MSIL2A_20260917T093029_R136_T34TFT_20260917T114345",
+   "data": "2026-09-17",
+   "nori": 2.5,
+   "tiles": "https://planetarycomputer.microsoft.com/api/data/v1/item/tiles/WebMercatorQuad/{z}/{x}/{y}@1x?collection=sentinel-2-l2a&item=S2B_MSIL2A_20260917T093029_R136_T34TFT_20260917T114345&assets=visual&asset_bidx=visual%7C1,2,3&nodata=0",
+   "judet": "BIHOR",
+   "bbox": [
+    22.31189,
+    46.83263,
+    23.80285,
+    47.84592
+   ]
+  }
+ ],
+ "fisiere": [
+  "carbon_mapper",
+  "climate_trace",
+  "eprtr",
+  "judete",
+  "natura2000",
+  "osm_conducte",
+  "osm_sensibile",
+  "osm_sonde",
+  "sentinel2",
+  "sonde",
+  "vant"
+ ],
+ "bounds": [
+  20.342800511791232,
+  43.78912801407594,
+  30.189701180781626,
+  47.949737677565494
+ ],
+ "dist_sensibil": 500
+}
