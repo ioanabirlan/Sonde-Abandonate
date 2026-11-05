@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Sonde abandonate</title>
-<meta name="description" content="Harta sondelor inactive, închise și abandonate din România, pe baza inventarului ANRMPSG (Regulamentul (UE) 2024/1787). Proiect I-MER, ASE București.">
+<title>Sonde inactive, închise și abandonate din România</title>
+<meta name="description" content="Harta sondelor inactive, închise temporar, închise permanent și abandonate din România, pe baza inventarului ANRMPSG (Regulamentul (UE) 2024/1787). Proiect I-MER, ASE București.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
@@ -88,9 +88,9 @@ h2{font-size:13px;font-weight:700;color:var(--ink);margin:16px 0 6px;padding-bot
 <aside id="panel">
  <button id="toggle" aria-label="Deschide panoul"></button>
  <div class="scroll">
-  <h1>Sonde abandonate</h1>
-  <div class="sub">Inventarul sondelor conform Regulamentului (UE) 2024/1787 privind reducerea emisiilor de metan</div>
-  <p>ANRMPSG publică etapizat, până în 2030, inventarul sondelor inactive, închise și abandonate din România. Harta prezintă sondele publicate până acum, împreună cu date de context despre emisiile de metan și despre zonele din jurul sondelor. La click pe orice element este indicată sursa datelor.</p>
+  <h1>Sonde inactive, închise și abandonate din România</h1>
+  <div class="sub">Inventarul ANRMPSG cerut de Regulamentul (UE) 2024/1787 privind reducerea emisiilor de metan cuprinde patru categorii de sonde: inactive, închise temporar, închise permanent și abandonate.</div>
+  <p>Inventarul se publică etapizat și trebuie finalizat până în 2030. Harta prezintă sondele publicate până acum, împreună cu date de context despre emisiile de metan și despre zonele din jurul sondelor. La click pe orice element este indicată sursa datelor.</p>
   <h2>Pe scurt</h2>
   <ul class="cifre" id="cifre"></ul>
   <div id="status" class="status">Se încarcă datele despre sonde…</div>
@@ -311,7 +311,7 @@ async function main(){
   esri:{type:'raster',tiles:[E+'World_Imagery/MapServer/tile/{z}/{y}/{x}'],tileSize:256,maxzoom:19,attribution:'Esri, Maxar, Earthstar Geographics'}},
   layers:[{id:'bg',type:'background',paint:{'background-color':'#e9ebee'}},{id:'base',type:'raster',source:'base'},{id:'esri',type:'raster',source:'esri',layout:{visibility:'none'}}]};
  const wide=innerWidth>720;if(!wide)document.getElementById('panel').classList.add('closed');
- map=new maplibregl.Map({container:'map',style,bounds:[[20.2,43.55],[29.8,48.3]],fitBoundsOptions:{padding:wide?{left:390,right:40,top:30,bottom:30}:{left:10,right:10,top:10,bottom:80}},hash:true,attributionControl:false,maxZoom:17});
+ map=new maplibregl.Map({container:'map',style,bounds:[[20.2,43.55],[29.8,48.3]],maxBounds:[[17.5,41.8],[32.5,50]],minZoom:5,fitBoundsOptions:{padding:wide?{left:390,right:40,top:30,bottom:30}:{left:10,right:10,top:10,bottom:80}},hash:true,attributionControl:false,maxZoom:17});
  map.addControl(new maplibregl.AttributionControl({compact:true,customAttribution:'Date: ANRMPSG, Carbon Mapper, Climate TRACE, © OpenStreetMap, EEA, Open-Meteo, Copernicus, geoBoundaries'}),'bottom-right');
  map.addControl(new maplibregl.NavigationControl({showCompass:false}),'top-right');
  map.addControl(new maplibregl.ScaleControl({unit:'metric'}),'bottom-right');

@@ -19,7 +19,7 @@
   "n2k": 974,
   "sens": 155,
   "sonde_langa_sens": 341,
-  "pene": 48,
+  "pene": 41,
   "xy_inversat": 3142,
   "verif": {
    "ok": 20654,
@@ -74,7 +74,7 @@
    "api": "https://api.carbonmapper.org/api/v1/catalog/plumes/annotated",
    "accesat": "2026-10-23 11:16 UTC",
    "status": "ok",
-   "n": 48,
+   "n": 41,
    "secunde": 1.1
   },
   "climate_trace": {
