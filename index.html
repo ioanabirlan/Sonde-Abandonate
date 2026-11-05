@@ -311,7 +311,7 @@ async function main(){
   esri:{type:'raster',tiles:[E+'World_Imagery/MapServer/tile/{z}/{y}/{x}'],tileSize:256,maxzoom:19,attribution:'Esri, Maxar, Earthstar Geographics'}},
   layers:[{id:'bg',type:'background',paint:{'background-color':'#e9ebee'}},{id:'base',type:'raster',source:'base'},{id:'esri',type:'raster',source:'esri',layout:{visibility:'none'}}]};
  const wide=innerWidth>720;if(!wide)document.getElementById('panel').classList.add('closed');
- map=new maplibregl.Map({container:'map',style,bounds:[[20.2,43.55],[29.8,48.3]],maxBounds:[[17.5,41.8],[32.5,50]],minZoom:5,fitBoundsOptions:{padding:wide?{left:390,right:40,top:30,bottom:30}:{left:10,right:10,top:10,bottom:80}},hash:true,attributionControl:false,maxZoom:17});
+ map=new maplibregl.Map({container:'map',style,bounds:[[20.2,43.55],[29.8,48.3]],maxBounds:[[2,33],[48,58]],minZoom:4,fitBoundsOptions:{padding:wide?{left:430,right:50,top:40,bottom:40}:{left:10,right:10,top:10,bottom:80}},hash:true,attributionControl:false,maxZoom:17});
  map.addControl(new maplibregl.AttributionControl({compact:true,customAttribution:'Date: ANRMPSG, Carbon Mapper, Climate TRACE, © OpenStreetMap, EEA, Open-Meteo, Copernicus, geoBoundaries'}),'bottom-right');
  map.addControl(new maplibregl.NavigationControl({showCompass:false}),'top-right');
  map.addControl(new maplibregl.ScaleControl({unit:'metric'}),'bottom-right');
